@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+      - ~/docker-data/mysql-data:/var/lib/mysql
+      - ~/docker-data/mysql.conf.d:/etc/mysql/mysql.conf.d
+
+  redis:
+    image: redis:5.0.5
+    container_name: redis-6379
+    restart: always
+    command: redis-server --appendonly yes --requirepass redis1234
+    ports:
+      - "6379:6379"
+    networks:
+      - backend-net
+    volumes:
+      - ~/docker-data/redis-data:/data
+    deploy:
+    resources:
+      limits:
+        cpus: '0.50'
+        memory: 50M
+      reservations:
+        cpus: '0.25'
+        memory: 20M
+
+  nginx-router:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - ~/docker-data/nginx-router/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ~/docker-data/nginx-router/nginx/conf.d:/etc/nginx/conf.d
+      - ~/docker-data/nginx-router/www:/usr/share/nginx/html
+      - ~/docker-data/nginx-router/logs:/var/log/ngin
+
+networks:
+  backend-net:
