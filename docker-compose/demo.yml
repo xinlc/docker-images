@@ -14,6 +14,11 @@ services:
     volumes:
       - ~/docker-data/mysql-data:/var/lib/mysql
       - ~/docker-data/mysql.conf.d:/etc/mysql/mysql.conf.d
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10" 
 
   redis:
     image: redis:5.0.5
@@ -34,6 +39,11 @@ services:
       reservations:
         cpus: '0.25'
         memory: 20M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "10" 
 
   nginx-router:
     image: nginx:latest
