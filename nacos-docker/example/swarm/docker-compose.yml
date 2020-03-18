@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  nacos:
+    image: nacos/nacos-server:1.2.0
+    ports:
+      - "9948:8848"
+      - "9555:9555"
+    configs:
+      - source: nacos_config
+        target: /home/nacos/init.d/custom.properties
+        mode: 0440
+    env_file:
+      - ./nacos-standlone-mysql.env
+    volumes:
+      - /usr/share/zoneinfo/Asia/Shanghai:/etc/localtime:ro
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "2"
+
+configs:
+  nacos_config:
+    file: ./data/custom.properties
